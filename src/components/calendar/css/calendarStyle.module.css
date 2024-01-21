@@ -1,0 +1,46 @@
+@charset "utf-8";
+
+.wrapper {
+    width: clamp(320px, 100%, 960px);
+    margin: auto;
+
+    & h1 {
+        margin-bottom: .5em;
+    }
+
+    & .btns {
+        display: flex;
+        justify-content: space-between;
+
+        & button {
+            padding: .5em 1em;
+        }
+    }
+
+    & .calendar {
+        list-style: none;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        place-items: center;
+        place-content: start;
+
+        & li {
+            padding: .5em;
+            align-self: flex-start;
+            background-color: #fff;
+            width: 100%;
+            border: 1px solid #dadada;
+            text-align: center;
+
+            /* 日曜日 */
+            &[data-daydate='0'] {
+                background-color: #f5c0c0;
+            }
+            /* 土曜日 */
+            &[data-daydate='6'] {
+                background-color: #c0dff5;
+            }
+        }
+    }
+}

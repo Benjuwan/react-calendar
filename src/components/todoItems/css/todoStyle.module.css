@@ -1,0 +1,78 @@
+@charset "utf-8";
+
+form,
+ul,
+button {
+    font-size: 1.4rem;
+    line-height: 1.8;
+}
+
+button {
+    appearance: none;
+    border-radius: 4px;
+    background-color: #333;
+    color: #fff;
+    border: 1px solid transparent;
+    cursor: pointer;
+
+    &#editBtn {
+        background-color: #1a1abe;
+    }
+
+    &[disabled] {
+        background-color: #dadada;
+        color: #333;
+        cursor: default;
+    }
+
+    &:not([disabled]):hover {
+        opacity: .75;
+    }
+}
+
+form {
+    & label {
+        margin-right: 1em;
+
+        & input[type="text"] {
+            width: 100%;
+        }
+    }
+}
+
+ul.todoLists {
+    list-style: none;
+    padding: 0;
+
+    & li {
+        display: flex;
+        flex-flow: row wrap;
+        gap: 2%;
+
+        & p {
+            margin: 0;
+            border-right: 1px solid #dadada;
+            padding-right: 1em;
+
+            &.editTargetStr {
+                width: 100%;
+            }
+        }
+
+        &:not(:last-of-type) {
+            margin-bottom: 1em;
+            padding-bottom: 1em;
+            border-bottom: 1px solid #dadada;
+        }
+    }
+}
+
+
+@media screen and (min-width:1025px) {
+
+    form,
+    ul,
+    button {
+        font-size: 14px;
+    }
+}
