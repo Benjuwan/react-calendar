@@ -37,12 +37,17 @@ export const usePrevNextDays = () => {
             }
         });
 
-        const theCalendar: calendarItemType[] = [...targetPrevDays, ...dayDateBox, ...targetNextDays];
-        if (theCalendar.length >= 35) {
-            const shallowCopy: calendarItemType[] = [...theCalendar].slice(0, 35);
-            return shallowCopy;
+        /* 各月において「先月・次月の日数を合計7日間だけ取得」して配列（カレンダー）に反映させる */
+        if (targetPrevDays.length > 0) {
+            let adjustedPrevDays: calendarItemType[] = [...targetPrevDays];
+            let adjustedNextDays: calendarItemType[] = [...targetNextDays];
+            if (targetPrevDays.length >= 4) adjustedPrevDays = [...targetPrevDays].slice(targetPrevDays.length - 4, targetPrevDays.length); // 先月は4日間
+            if (targetNextDays.length >= 3) adjustedNextDays = [...targetNextDays].slice(0, 3); // 次月は3日間
+            const theCalendar: calendarItemType[] = [...adjustedPrevDays, ...dayDateBox, ...adjustedNextDays];
+            return theCalendar
         } else {
-            return theCalendar;
+            const theCalendar: calendarItemType[] = [...targetPrevDays, ...dayDateBox, ...targetNextDays];
+            return theCalendar
         }
     }
 

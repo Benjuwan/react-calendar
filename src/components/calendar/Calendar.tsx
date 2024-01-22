@@ -48,7 +48,7 @@ export const Calendar = () => {
                             {day.monthDateNum && <span>{day.monthDateNum}/</span>}{day.day}
                         </p>
                         <p>{day.dayDate}</p>
-                        <Todo />
+                        {day.monthDateNum ? null : <Todo />}
                     </li>
                 ))}
             </ul>
