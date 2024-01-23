@@ -73,7 +73,7 @@ export const TodoForm: FC<todoFormType> = (props) => {
                     }
                 }} />
             </label>
-            <button className={todoStyle.button} type="button" disabled={todoContent ? todoContent.length <= 0 : reRegiTodoContent.length <= 0} onClick={() => {
+            <button className={todoStyle.formBtns} type="button" disabled={todoContent ? todoContent.length <= 0 : reRegiTodoContent.length <= 0} onClick={() => {
                 {
                     todoContent ?
                         regiTodoItem(todoContent) :

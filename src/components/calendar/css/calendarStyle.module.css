@@ -4,8 +4,33 @@
     width: clamp(320px, 100%, 960px);
     margin: auto;
 
+    & button {
+        appearance: none;
+        border-radius: 4px;
+        background-color: #333;
+        color: #fff;
+        border: 1px solid transparent;
+        cursor: pointer;
+
+        &[disabled] {
+            background-color: #dadada;
+            color: #333;
+            cursor: default;
+        }
+
+        &:not([disabled]):hover {
+            opacity: .75;
+        }
+    }
+
     & h1 {
         margin-bottom: .5em;
+    }
+
+    & .resetBtn {
+        margin-bottom: 1em;
+        background-color: #cb1414;
+        padding: 0 1em;
     }
 
     & .btns {
@@ -37,6 +62,7 @@
             &[data-daydate='0'] {
                 background-color: #f5c0c0;
             }
+
             /* 土曜日 */
             &[data-daydate='6'] {
                 background-color: #c0dff5;

@@ -2,24 +2,25 @@
 
 form,
 ul,
-button {
+.formBtns {
     font-size: 1.4rem;
     line-height: 1.8;
 }
 
-button {
-    appearance: none;
-    border-radius: 4px;
-    background-color: #333;
-    color: #fff;
-    border: 1px solid transparent;
-    cursor: pointer;
-
+.formBtns {
     &#editBtn {
         background-color: #1a1abe;
     }
 
-    &[disabled] {
+    /* calendarStyle.module.css から継承されている */
+    /* appearance: none;
+    border-radius: 4px;
+    background-color: #333;
+    color: #fff;
+    border: 1px solid transparent;
+    cursor: pointer; */
+
+    /* &[disabled] {
         background-color: #dadada;
         color: #333;
         cursor: default;
@@ -27,7 +28,7 @@ button {
 
     &:not([disabled]):hover {
         opacity: .75;
-    }
+    } */
 }
 
 form {
@@ -73,7 +74,7 @@ ul.todoLists {
 
     form,
     ul,
-    button {
+    .formBtns {
         font-size: 14px;
     }
 }

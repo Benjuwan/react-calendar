@@ -39,7 +39,7 @@ export const Todo = ({ todoID }: { todoID: string }) => {
         const getLocalStorageItems: string | null = localStorage.getItem('todoMemos');
         if (getLocalStorageItems !== null) {
             const SaveLocalStorageDateItems: todoItemType[] = JSON.parse(getLocalStorageItems);
-            setTodoList((_prevTodoList) => SaveLocalStorageDateItems);
+            setTodoList((_prevTodoList) => [...SaveLocalStorageDateItems]);
         } else {
             setTodoList((_prevTodoList) => []); // 前月や次月に移動するたびに ToDo メモを初期化
         }
@@ -72,13 +72,13 @@ export const Todo = ({ todoID }: { todoID: string }) => {
                                                 index={i}
                                                 edit={todoItem.edit}
                                             />
-                                            <button type="button" onClick={() => {
+                                            <button className={todoStyle.formBtns} type="button" onClick={() => {
                                                 removeTodoItem(i);
                                             }}>削除</button>
                                         </> :
                                         <p>{todoItem.todoContent}</p>
                                     }
-                                    <button id={todoStyle["editBtn"]} type="button" onClick={() => {
+                                    <button className={todoStyle.formBtns} id={todoStyle["editBtn"]} type="button" onClick={() => {
                                         changeMode(todoItem, i, todoItem.edit);
                                     }}>{todoItem.edit === true ? '戻る' : '編集'}</button>
                                 </li>
