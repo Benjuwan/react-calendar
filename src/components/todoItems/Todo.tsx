@@ -2,14 +2,14 @@ import { useEffect, useState, Fragment } from "react";
 import todoStyle from "./css/todoStyle.module.css";
 import { todoItemType } from "./ts/todoItemType";
 import { useAtom } from "jotai";
-import { todoListAtom } from "../../atom/atom";
+import { todoMemoLocalStorageAtom, todoMemoAtom } from "../../atom/atom";
 import { TodoForm } from "./TodoForm";
 
 export const Todo = ({ todoID }: { todoID: string }) => {
     const [todoContent, setTodoContent] = useState<string>('');
-    const [todoList, setTodoList] = useState<todoItemType[]>([]);
 
-    const [, setLocalstorage] = useAtom(todoListAtom); // 更新関数のみ使用
+    const [, setLocalstorage] = useAtom(todoMemoLocalStorageAtom); // 更新関数のみ使用
+    const [todoMemo, setTodoMemo] = useAtom(todoMemoAtom);
 
     const changeMode: (todiItem: todoItemType, index: number, editMode: boolean) => void = (todiItem: todoItemType, index: number, editMode: boolean) => {
         let editState: boolean | null = null;
@@ -21,15 +21,15 @@ export const Todo = ({ todoID }: { todoID: string }) => {
             todoContent: todiItem.todoContent,
             edit: editState
         }
-        const shallowCopy: todoItemType[] = [...todoList];
+        const shallowCopy: todoItemType[] = [...todoMemo];
         shallowCopy.splice(index, 1, updateTodoList); // splice（切取＆置換）した結果ではなく「処理結果の残り分（shallowCopy）を更新関数に渡す」ので「変数への代入」を行わず、shallowCopy を以下の setter 関数に渡している。
-        setTodoList((_prevTodoList) => shallowCopy);
+        setTodoMemo((_prevTodoList) => shallowCopy);
     }
 
     const removeTodoItem: (index: number) => void = (index: number) => {
-        const shallowCopy: todoItemType[] = [...todoList];
+        const shallowCopy: todoItemType[] = [...todoMemo];
         shallowCopy.splice(index, 1);
-        setTodoList((_prevTodoList) => shallowCopy);
+        setTodoMemo((_prevTodoList) => shallowCopy);
         /* ---------------- localStorage 関連の処理（更新）---------------- */
         setLocalstorage((_prevLocalStorage) => shallowCopy);
         localStorage.setItem('todoMemos', JSON.stringify([...shallowCopy]));
@@ -39,9 +39,9 @@ export const Todo = ({ todoID }: { todoID: string }) => {
         const getLocalStorageItems: string | null = localStorage.getItem('todoMemos');
         if (getLocalStorageItems !== null) {
             const SaveLocalStorageDateItems: todoItemType[] = JSON.parse(getLocalStorageItems);
-            setTodoList((_prevTodoList) => [...SaveLocalStorageDateItems]);
+            setTodoMemo((_prevTodoList) => [...SaveLocalStorageDateItems]);
         } else {
-            setTodoList((_prevTodoList) => []); // 前月や次月に移動するたびに ToDo メモを初期化
+            setTodoMemo((_prevTodoList) => []); // 前月や次月に移動するたびに ToDo メモを初期化
         }
     }, [todoID]);
 
@@ -49,14 +49,12 @@ export const Todo = ({ todoID }: { todoID: string }) => {
         <>
             <TodoForm
                 todoID={todoID}
-                todoList={todoList}
-                setTodoList={setTodoList}
                 todoContent={todoContent}
                 setTodoContent={setTodoContent}
             />
-            {todoList.length > 0 &&
+            {todoMemo.length > 0 &&
                 <ul className={todoStyle.todoLists}>
-                    {todoList.map((todoItem, i) => (
+                    {todoMemo.map((todoItem, i) => (
                         /* key={i} を渡すために Fragment を使用 */
                         <Fragment key={i}>
                             {/* yyyy/MM/dd が一致した場合 */}
@@ -67,8 +65,6 @@ export const Todo = ({ todoID }: { todoID: string }) => {
                                             <p className={todoStyle.editTargetStr}>編集前：{todoItem.todoContent}</p>
                                             <TodoForm
                                                 todoID={todoID}
-                                                todoList={todoList}
-                                                setTodoList={setTodoList}
                                                 index={i}
                                                 edit={todoItem.edit}
                                             />

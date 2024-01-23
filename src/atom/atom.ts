@@ -1,17 +1,19 @@
 import { atom } from "jotai";
 import { todoItemType } from "../components/todoItems/ts/todoItemType";
 
-const todoListAtomDefault: todoItemType = {
+const todoMemoItemsDefault: todoItemType = {
     todoID: '',
     todoContent: '',
     edit: false
 }
 
-export let todoListAtom = atom([todoListAtomDefault]);
+export let todoMemoLocalStorageAtom = atom([todoMemoItemsDefault]);
 
 /* 既存の localStorage データを取得して（データがあれば）Atom に代入 */
 const getLocalStorageItems: string | null = localStorage.getItem('todoMemos');
 if (getLocalStorageItems !== null) {
     const SaveLocalStorageDateItems: todoItemType[] = JSON.parse(getLocalStorageItems);
-    todoListAtom = atom([...SaveLocalStorageDateItems]);
+    todoMemoLocalStorageAtom = atom([...SaveLocalStorageDateItems]);
 }
+
+export const todoMemoAtom = atom([todoMemoItemsDefault]);

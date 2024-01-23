@@ -2,12 +2,10 @@ import { ChangeEvent, FC, useState } from "react";
 import { todoItemType } from "./ts/todoItemType";
 import todoStyle from "./css/todoStyle.module.css";
 import { useAtom } from "jotai";
-import { todoListAtom } from "../../atom/atom";
+import { todoMemoLocalStorageAtom, todoMemoAtom } from "../../atom/atom";
 
 type todoFormType = {
     todoID: string;
-    todoList: todoItemType[];
-    setTodoList: React.Dispatch<React.SetStateAction<todoItemType[]>>,
     todoContent?: string;
     setTodoContent?: React.Dispatch<React.SetStateAction<string>>;
     index?: number; // props で index 番号に初期値を設定している（一番上のToDo編集実現に index が必要なため）
@@ -15,11 +13,12 @@ type todoFormType = {
 }
 
 export const TodoForm: FC<todoFormType> = (props) => {
-    const { todoID, todoList, setTodoList, todoContent, setTodoContent, index = 0, edit } = props;
+    const { todoID, todoContent, setTodoContent, index = 0, edit } = props;
 
     const [reRegiTodoContent, setReRegiTodoContent] = useState<string>('');
 
-    const [, setLocalstorage] = useAtom(todoListAtom); // 更新関数のみ使用
+    const [, setLocalstorage] = useAtom(todoMemoLocalStorageAtom); // 更新関数のみ使用
+    const [todoMemo, setTodoMemo] = useAtom(todoMemoAtom);
 
     /* ToDo の登録 */
     const regiTodoItem: (todoContent: string) => void = (todoContent: string) => {
@@ -30,10 +29,10 @@ export const TodoForm: FC<todoFormType> = (props) => {
         }
 
         if (todoContent.length > 0) {
-            setTodoList((_prevTodoList) => [...todoList, newTodoList]);
+            setTodoMemo((_prevTodoMemo) => [...todoMemo, newTodoList]);
             /* ---------------- localStorage 関連の処理（登録）---------------- */
-            setLocalstorage((_prevLocalStorage) => [...todoList, newTodoList]);
-            localStorage.setItem('todoMemos', JSON.stringify([...todoList, newTodoList]));
+            setLocalstorage((_prevLocalStorage) => [...todoMemo, newTodoList]);
+            localStorage.setItem('todoMemos', JSON.stringify([...todoMemo, newTodoList]));
         }
     }
 
@@ -44,10 +43,10 @@ export const TodoForm: FC<todoFormType> = (props) => {
             todoContent: reRegiTodoContent,
             edit: false
         }
-        const shallowCopy: todoItemType[] = [...todoList];
+        const shallowCopy: todoItemType[] = [...todoMemo];
         shallowCopy.splice(index, 1, updateTodoList); // splice（切取＆置換）した結果ではなく「処理結果の残り分（shallowCopy）を更新関数に渡す」ので「変数への代入」を行わず、shallowCopy を以下の setter 関数に渡している。
         if (reRegiTodoContent.length > 0) {
-            setTodoList((_prevTodoList) => shallowCopy);
+            setTodoMemo((_prevTodoMemo) => shallowCopy);
             /* ---------------- localStorage 関連の処理（更新）---------------- */
             setLocalstorage((_prevLocalStorage) => shallowCopy);
             localStorage.setItem('todoMemos', JSON.stringify([...shallowCopy]));
