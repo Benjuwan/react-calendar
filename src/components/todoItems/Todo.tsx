@@ -1,11 +1,15 @@
-import { useState } from "react";
-import { todoItemType } from "./ts/todoItemType";
-import { TodoForm } from "./TodoForm";
+import { useEffect, useState, Fragment } from "react";
 import todoStyle from "./css/todoStyle.module.css";
+import { todoItemType } from "./ts/todoItemType";
+import { useAtom } from "jotai";
+import { todoListAtom } from "../../atom/atom";
+import { TodoForm } from "./TodoForm";
 
-export const Todo = () => {
+export const Todo = ({ todoID }: { todoID: string }) => {
     const [todoContent, setTodoContent] = useState<string>('');
     const [todoList, setTodoList] = useState<todoItemType[]>([]);
+
+    const [, setLocalstorage] = useAtom(todoListAtom); // 更新関数のみ使用
 
     const changeMode: (todiItem: todoItemType, index: number, editMode: boolean) => void = (todiItem: todoItemType, index: number, editMode: boolean) => {
         let editState: boolean | null = null;
@@ -13,6 +17,7 @@ export const Todo = () => {
         else editState = false;
 
         const updateTodoList: todoItemType = {
+            todoID: todoID,
             todoContent: todiItem.todoContent,
             edit: editState
         }
@@ -25,11 +30,25 @@ export const Todo = () => {
         const shallowCopy: todoItemType[] = [...todoList];
         shallowCopy.splice(index, 1);
         setTodoList((_prevTodoList) => shallowCopy);
+        /* ---------------- localStorage 関連の処理（更新）---------------- */
+        setLocalstorage((_prevLocalStorage) => shallowCopy);
+        localStorage.setItem('todoMemos', JSON.stringify([...shallowCopy]));
     }
+
+    useEffect(() => {
+        const getLocalStorageItems: string | null = localStorage.getItem('todoMemos');
+        if (getLocalStorageItems !== null) {
+            const SaveLocalStorageDateItems: todoItemType[] = JSON.parse(getLocalStorageItems);
+            setTodoList((_prevTodoList) => SaveLocalStorageDateItems);
+        } else {
+            setTodoList((_prevTodoList) => []); // 前月や次月に移動するたびに ToDo メモを初期化
+        }
+    }, [todoID]);
 
     return (
         <>
             <TodoForm
+                todoID={todoID}
                 todoList={todoList}
                 setTodoList={setTodoList}
                 todoContent={todoContent}
@@ -38,26 +57,34 @@ export const Todo = () => {
             {todoList.length > 0 &&
                 <ul className={todoStyle.todoLists}>
                     {todoList.map((todoItem, i) => (
-                        <li key={i}>
-                            {todoItem.edit === true ?
-                                <>
-                                    <p className={todoStyle.editTargetStr}>編集前：{todoItem.todoContent}</p>
-                                    <TodoForm
-                                        todoList={todoList}
-                                        setTodoList={setTodoList}
-                                        index={i}
-                                        edit={todoItem.edit}
-                                    />
-                                    <button type="button" onClick={() => {
-                                        removeTodoItem(i);
-                                    }}>削除</button>
-                                </> :
-                                <p>{todoItem.todoContent}</p>
+                        /* key={i} を渡すために Fragment を使用 */
+                        <Fragment key={i}>
+                            {/* yyyy/MM/dd が一致した場合 */}
+                            {todoItem.todoID === todoID ?
+                                <li>
+                                    {todoItem.edit === true ?
+                                        <>
+                                            <p className={todoStyle.editTargetStr}>編集前：{todoItem.todoContent}</p>
+                                            <TodoForm
+                                                todoID={todoID}
+                                                todoList={todoList}
+                                                setTodoList={setTodoList}
+                                                index={i}
+                                                edit={todoItem.edit}
+                                            />
+                                            <button type="button" onClick={() => {
+                                                removeTodoItem(i);
+                                            }}>削除</button>
+                                        </> :
+                                        <p>{todoItem.todoContent}</p>
+                                    }
+                                    <button id={todoStyle["editBtn"]} type="button" onClick={() => {
+                                        changeMode(todoItem, i, todoItem.edit);
+                                    }}>{todoItem.edit === true ? '戻る' : '編集'}</button>
+                                </li>
+                                : null
                             }
-                            <button id={todoStyle["editBtn"]} type="button" onClick={() => {
-                                changeMode(todoItem, i, todoItem.edit);
-                            }}>{todoItem.edit === true ? '戻る' : '編集'}</button>
-                        </li>
+                        </Fragment>
                     ))}
                 </ul>
             }

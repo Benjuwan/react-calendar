@@ -47,7 +47,8 @@ ul.todoLists {
     & li {
         display: flex;
         flex-flow: row wrap;
-        gap: 2%;
+        justify-content: center;
+        gap: .5em;
 
         & p {
             margin: 0;
