@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { useAtom } from "jotai";
-import { todoListAtom } from "../../atom/atom";
+import { todoMemoLocalStorageAtom } from "../../atom/atom";
 
 type btnsPropsType = {
     className: string;
@@ -13,7 +13,7 @@ type btnsPropsType = {
 export const PrevNextMonthBtns: FC<btnsPropsType> = (props) => {
     const { className, ctrlYear, setCtrlYear, ctrlMonth, setCtrlMonth } = props;
 
-    const [localstorage] = useAtom(todoListAtom); // 変数のみ使用（カレンダー移動時の登録・更新作業）
+    const [localstorageData] = useAtom(todoMemoLocalStorageAtom); // 変数のみ使用（カレンダー移動時の登録・更新作業）
 
     const nextCalendarView = () => {
         if (ctrlMonth === 12) {
@@ -23,7 +23,7 @@ export const PrevNextMonthBtns: FC<btnsPropsType> = (props) => {
             setCtrlMonth((_prevCtrlMonth) => ctrlMonth + 1);
         }
         /* ---------------- localStorage 関連の処理（登録）---------------- */
-        localStorage.setItem('todoMemos', JSON.stringify([...localstorage]));
+        localStorage.setItem('todoMemos', JSON.stringify([...localstorageData]));
     }
 
     const prevCalendarView = () => {
@@ -34,7 +34,7 @@ export const PrevNextMonthBtns: FC<btnsPropsType> = (props) => {
             setCtrlMonth((_prevCtrlMonth) => ctrlMonth - 1);
         }
         /* ---------------- localStorage 関連の処理（登録）---------------- */
-        localStorage.setItem('todoMemos', JSON.stringify([...localstorage]));
+        localStorage.setItem('todoMemos', JSON.stringify([...localstorageData]));
     }
 
     return (

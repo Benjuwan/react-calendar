@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import calendarStyle from "./css/calendarStyle.module.css";
 import { calendarItemType } from "./ts/calendarItemType";
 import { useAtom } from "jotai";
-import { todoListAtom } from "../../atom/atom";
+import { todoMemoLocalStorageAtom } from "../../atom/atom";
 import { PrevNextMonthBtns } from "./PrevNextMonthBtns";
 import { Todo } from "../todoItems/Todo";
 import { useGetMonthDays } from "./hooks/useGetMonthDays";
@@ -10,7 +10,7 @@ import { useGetMonthDays } from "./hooks/useGetMonthDays";
 export const Calendar = () => {
     const { getMonthDays } = useGetMonthDays();
 
-    const [localstorage] = useAtom(todoListAtom); // 変数のみ使用
+    const [localstorageData] = useAtom(todoMemoLocalStorageAtom); // 変数のみ使用
 
     const currYear = new Date().getFullYear();
     const currMonth = new Date().getMonth() + 1;
@@ -28,8 +28,8 @@ export const Calendar = () => {
     return (
         <div className={calendarStyle.wrapper}>
             <h1>{ctrlYear}年{ctrlMonth}月</h1>
-            {/* localstorage(Atom)にはデフォルト値が1つ入っているため disabled={localstorage.length <= 1} と指定 */}
-            <button disabled={localstorage.length <= 1} className={calendarStyle.resetBtn} type="button" onClick={resetAllSchedule}>予定を全削除</button>
+            {/* localstorageData(Atom)にはデフォルト値が1つ入っているため disabled={localstorageData.length <= 1} と指定 */}
+            <button disabled={localstorageData.length <= 1} className={calendarStyle.resetBtn} type="button" onClick={resetAllSchedule}>予定を全削除</button>
             <PrevNextMonthBtns
                 className={calendarStyle.btns}
                 ctrlYear={ctrlYear}
