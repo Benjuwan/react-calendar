@@ -35,20 +35,25 @@ export const useGetCalndarItem = () => {
 
         if (signalPrevNextMonth) {
             const newCalendarItem: calendarItemType = {
+                year: year,
+                month: month,
                 day: day,
                 dayDate: japDayDate,
                 dayDateNum: dayDate,
-                monthDateNum: month
+                signalPrevNextMonth: true
             }
             return newCalendarItem;
         } else {
             const newCalendarItem: calendarItemType = {
+                year: year,
+                month: month,
                 day: day,
                 dayDate: japDayDate,
                 dayDateNum: dayDate,
             }
             return newCalendarItem;
         }
+        
     }
 
     return { getCalendarItem }
