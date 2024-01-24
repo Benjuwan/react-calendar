@@ -12,6 +12,19 @@ ul,
         background-color: #1a1abe;
     }
 
+    &#deleteBtn {
+        background-color: #aa0b0b;
+    }
+
+    &#closeBtn {
+        background-color: #0baa0b;
+        margin-top: .5em;
+    }
+
+    &#regiUpdateBtn {
+        width: 100%;
+    }
+
     /* calendarStyle.module.css から継承されている */
     /* appearance: none;
     border-radius: 4px;
@@ -32,11 +45,19 @@ ul,
 }
 
 form {
+    margin-bottom: 1em;
+
     & label {
         margin-right: 1em;
 
         & input[type="text"] {
             width: 100%;
+        }
+
+        &.timeLabel {
+            font-size: clamp(10px, calc(100vw/150), 12px);
+            display: block;
+            margin: .5em 0;
         }
     }
 }
@@ -50,25 +71,73 @@ ul.todoLists {
         flex-flow: row wrap;
         justify-content: center;
         gap: .5em;
+        background-color: #fafafa;
+        padding: .5em;
+        box-shadow: 0 0 8px rgba(0, 0, 0, .25) inset;
+        border-radius: 4px;
+        
+        &:hover {
+            & p {
+                &.editTargetStr {
+                    cursor: pointer;
+                    color: #0baa0b;
+                }
+            }
+        }
 
         & p {
-            margin: 0;
-            border-right: 1px solid #dadada;
-            padding-right: 1em;
+            margin: 0
+        }
 
-            &.editTargetStr {
-                width: 100%;
+        & div.editTargetContent {
+            & span {
+                font-size: clamp(10px, calc(100vw/150), 12px);
+                display: block;
             }
         }
 
         &:not(:last-of-type) {
             margin-bottom: 1em;
-            padding-bottom: 1em;
-            border-bottom: 1px solid #dadada;
+        }
+
+        & .modalWindow {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            padding: calc(100vw/8) 1em;
+            inset: 0;
+            margin: auto;
+            background-color: rgba(255, 255, 255, .5);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .25s, visibility .25s;
+
+            & .modalWindowChild {
+                display: flex;
+                flex-flow: row wrap;
+                justify-content: center;
+                gap: 2%;
+                width: clamp(32rem, 100%, 56rem);
+                margin: auto;
+                background-color: #fff;
+                box-shadow: 0 0 4px rgba(0, 0, 0, .5) inset;
+                border-radius: 4px;
+                padding: 1em;
+
+                & div.editTargetContent {
+                    text-align: left;
+                }
+            }
+        }
+
+        & .modalWindowOnView {
+            opacity: 1;
+            visibility: visible;
         }
     }
 }
-
 
 @media screen and (min-width:1025px) {
 
@@ -76,5 +145,16 @@ ul.todoLists {
     ul,
     .formBtns {
         font-size: 14px;
+    }
+
+    ul.todoLists {
+        & li {
+            & .modalWindow {
+                & .modalWindowChild {
+                    width: clamp(320px, 100%, 560px);
+                    gap: 5%;
+                }
+            }
+        }
     }
 }

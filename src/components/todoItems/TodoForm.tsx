@@ -1,83 +1,58 @@
-import { ChangeEvent, FC, useState } from "react";
-import { todoItemType } from "./ts/todoItemType";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import todoStyle from "./css/todoStyle.module.css";
-import { useAtom } from "jotai";
-import { todoMemoLocalStorageAtom, todoMemoAtom } from "../../atom/atom";
+import { useUpdateTodoItem } from "./hooks/useUpdateTodoItem";
+import { useRegiTodoItem } from "./hooks/useRegiTodoItem";
 
 type todoFormType = {
     todoID: string;
-    todoContent?: string;
-    setTodoContent?: React.Dispatch<React.SetStateAction<string>>;
-    index?: number; // props で index 番号に初期値を設定している（一番上のToDo編集実現に index が必要なため）
+    index?: number;
     edit?: boolean;
 }
 
 export const TodoForm: FC<todoFormType> = (props) => {
-    const { todoID, todoContent, setTodoContent, index = 0, edit } = props;
+    /* index には初期値を設定している（一番上の ToDo 編集実現に index が必要なため）*/
+    const { todoID, index = 0, edit } = props;
 
-    const [reRegiTodoContent, setReRegiTodoContent] = useState<string>('');
+    /* 入力欄の State（ToDo, 開始時刻, 終了時刻）*/
+    const [todoContent, setTodoContent] = useState<string>('');
+    const [startTime, setStartTime] = useState<string>('');
+    const [finishTime, setFinishTime] = useState<string>('');
 
-    const [, setLocalstorage] = useAtom(todoMemoLocalStorageAtom); // 更新関数のみ使用
-    const [todoMemo, setTodoMemo] = useAtom(todoMemoAtom);
+    const { updateTodoItem } = useUpdateTodoItem();
+    const { regiTodoItem } = useRegiTodoItem();
 
-    /* ToDo の登録 */
-    const regiTodoItem: (todoContent: string) => void = (todoContent: string) => {
-        const newTodoList: todoItemType = {
-            todoID: todoID,
-            todoContent: todoContent,
-            edit: false
-        }
-
-        if (todoContent.length > 0) {
-            setTodoMemo((_prevTodoMemo) => [...todoMemo, newTodoList]);
-            /* ---------------- localStorage 関連の処理（登録）---------------- */
-            setLocalstorage((_prevLocalStorage) => [...todoMemo, newTodoList]);
-            localStorage.setItem('todoMemos', JSON.stringify([...todoMemo, newTodoList]));
-        }
+    const resetStates: () => void = () => {
+        setTodoContent((_prevTodoContent) => '');
+        setStartTime((_prevStartTime) => '');
+        setFinishTime((_prevFinishTime) => '');
     }
 
-    /* ToDo の更新 */
-    const updateTodoItem: (index: number) => void = (index: number) => {
-        const updateTodoList: todoItemType = {
-            todoID: todoID,
-            todoContent: reRegiTodoContent,
-            edit: false
-        }
-        const shallowCopy: todoItemType[] = [...todoMemo];
-        shallowCopy.splice(index, 1, updateTodoList); // splice（切取＆置換）した結果ではなく「処理結果の残り分（shallowCopy）を更新関数に渡す」ので「変数への代入」を行わず、shallowCopy を以下の setter 関数に渡している。
-        if (reRegiTodoContent.length > 0) {
-            setTodoMemo((_prevTodoMemo) => shallowCopy);
-            /* ---------------- localStorage 関連の処理（更新）---------------- */
-            setLocalstorage((_prevLocalStorage) => shallowCopy);
-            localStorage.setItem('todoMemos', JSON.stringify([...shallowCopy]));
-        }
-    }
+    useEffect(() => resetStates(), [todoID]); // 前月や次月に移動するたびに入力欄を初期化
 
     return (
         <form className={todoStyle.form} onSubmit={(formElm: ChangeEvent<HTMLFormElement>) => {
             formElm.preventDefault();
-            { todoContent ? regiTodoItem(todoContent) : updateTodoItem(index) }
-            { setTodoContent ? setTodoContent((_prevTodoContent) => '') : setReRegiTodoContent((_prevReRegiTodoContent) => '') }
+            {
+                !edit ?
+                    regiTodoItem(todoID, todoContent, startTime, finishTime) :
+                    updateTodoItem(todoID, todoContent, startTime, finishTime, index)
+            }
+            resetStates();
         }}>
             <label>
-                <input type="text" value={
-                    setTodoContent ?
-                        todoContent :
-                        reRegiTodoContent
-                } onInput={(todoTxt: ChangeEvent<HTMLInputElement>) => {
-                    {
-                        setTodoContent ?
-                            setTodoContent((_prevTodoContent) => todoTxt.target.value) :
-                            setReRegiTodoContent((_prevReRegiTodoContent) => todoTxt.target.value)
-                    }
+                <input type="text" value={todoContent} onInput={(todoTxt: ChangeEvent<HTMLInputElement>) => {
+                    setTodoContent((_prevTodoContent) => todoTxt.target.value);
                 }} />
             </label>
-            <button className={todoStyle.formBtns} type="button" disabled={todoContent ? todoContent.length <= 0 : reRegiTodoContent.length <= 0} onClick={() => {
+            <label className={todoStyle.timeLabel}>開始時刻 <input type="time" value={startTime} onChange={(timeElm: ChangeEvent<HTMLInputElement>) => setStartTime(timeElm.target.value)} /></label>
+            <label className={todoStyle.timeLabel}>終了時刻 <input type="time" value={finishTime} onChange={(timeElm: ChangeEvent<HTMLInputElement>) => setFinishTime(timeElm.target.value)} /></label>
+            <button className={todoStyle.formBtns} id={todoStyle.regiUpdateBtn} type="button" disabled={todoContent.length <= 0} onClick={() => {
                 {
-                    todoContent ?
-                        regiTodoItem(todoContent) :
-                        updateTodoItem(index)
+                    !edit ?
+                        regiTodoItem(todoID, todoContent, startTime, finishTime) :
+                        updateTodoItem(todoID, todoContent, startTime, finishTime, index)
                 }
+                resetStates();
             }}>{!edit ? '登録' : '再登録'}</button>
         </form>
     );

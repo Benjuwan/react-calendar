@@ -1,39 +1,13 @@
-import { useEffect, useState, Fragment } from "react";
+import { useEffect, Fragment, SyntheticEvent } from "react";
 import todoStyle from "./css/todoStyle.module.css";
 import { todoItemType } from "./ts/todoItemType";
 import { useAtom } from "jotai";
-import { todoMemoLocalStorageAtom, todoMemoAtom } from "../../atom/atom";
+import { todoMemoAtom } from "../../atom/atom";
 import { TodoForm } from "./TodoForm";
+import { TodoItems } from "./TodoItems";
 
 export const Todo = ({ todoID }: { todoID: string }) => {
-    const [todoContent, setTodoContent] = useState<string>('');
-
-    const [, setLocalstorage] = useAtom(todoMemoLocalStorageAtom); // 更新関数のみ使用
     const [todoMemo, setTodoMemo] = useAtom(todoMemoAtom);
-
-    const changeMode: (todiItem: todoItemType, index: number, editMode: boolean) => void = (todiItem: todoItemType, index: number, editMode: boolean) => {
-        let editState: boolean | null = null;
-        if (editMode === false) editState = true;
-        else editState = false;
-
-        const updateTodoList: todoItemType = {
-            todoID: todoID,
-            todoContent: todiItem.todoContent,
-            edit: editState
-        }
-        const shallowCopy: todoItemType[] = [...todoMemo];
-        shallowCopy.splice(index, 1, updateTodoList); // splice（切取＆置換）した結果ではなく「処理結果の残り分（shallowCopy）を更新関数に渡す」ので「変数への代入」を行わず、shallowCopy を以下の setter 関数に渡している。
-        setTodoMemo((_prevTodoList) => shallowCopy);
-    }
-
-    const removeTodoItem: (index: number) => void = (index: number) => {
-        const shallowCopy: todoItemType[] = [...todoMemo];
-        shallowCopy.splice(index, 1);
-        setTodoMemo((_prevTodoList) => shallowCopy);
-        /* ---------------- localStorage 関連の処理（更新）---------------- */
-        setLocalstorage((_prevLocalStorage) => shallowCopy);
-        localStorage.setItem('todoMemos', JSON.stringify([...shallowCopy]));
-    }
 
     useEffect(() => {
         const getLocalStorageItems: string | null = localStorage.getItem('todoMemos');
@@ -45,13 +19,15 @@ export const Todo = ({ todoID }: { todoID: string }) => {
         }
     }, [todoID]);
 
+    /* モーダル表示関連（ToDoの詳細表示オン・オフ）*/
+    const OnViewModalWindow: (viewerParentElm: HTMLElement) => void = (viewerParentElm: HTMLElement) => {
+        const modalWindow: Element | null = viewerParentElm.querySelector(`.${todoStyle.modalWindow}`);
+        modalWindow?.classList.add(`${todoStyle.modalWindowOnView}`);
+    }
+
     return (
         <>
-            <TodoForm
-                todoID={todoID}
-                todoContent={todoContent}
-                setTodoContent={setTodoContent}
-            />
+            <TodoForm todoID={todoID} />
             {todoMemo.length > 0 &&
                 <ul className={todoStyle.todoLists}>
                     {todoMemo.map((todoItem, i) => (
@@ -59,24 +35,20 @@ export const Todo = ({ todoID }: { todoID: string }) => {
                         <Fragment key={i}>
                             {/* yyyy/MM/dd が一致した場合 */}
                             {todoItem.todoID === todoID ?
-                                <li>
-                                    {todoItem.edit === true ?
-                                        <>
-                                            <p className={todoStyle.editTargetStr}>編集前：{todoItem.todoContent}</p>
-                                            <TodoForm
-                                                todoID={todoID}
-                                                index={i}
-                                                edit={todoItem.edit}
-                                            />
-                                            <button className={todoStyle.formBtns} type="button" onClick={() => {
-                                                removeTodoItem(i);
-                                            }}>削除</button>
-                                        </> :
-                                        <p>{todoItem.todoContent}</p>
-                                    }
-                                    <button className={todoStyle.formBtns} id={todoStyle["editBtn"]} type="button" onClick={() => {
-                                        changeMode(todoItem, i, todoItem.edit);
-                                    }}>{todoItem.edit === true ? '戻る' : '編集'}</button>
+                                <li onClick={(liElm: SyntheticEvent<HTMLLIElement>) => {
+                                    OnViewModalWindow(liElm.currentTarget);
+                                }}>
+                                    <div className={todoStyle.editTargetContent}>
+                                        <p className={todoStyle.editTargetStr}>{todoItem.todoContent}</p>
+                                        {todoItem.startTime && <span>開始時刻：{todoItem.startTime}</span>}
+                                        {todoItem.finishTime && <span>終了時刻：{todoItem.finishTime}</span>}
+                                    </div>
+                                    <TodoItems
+                                        todoItem={todoItem}
+                                        todoStyle={todoStyle}
+                                        todoID={todoID}
+                                        index={i}
+                                    />
                                 </li>
                                 : null
                             }
