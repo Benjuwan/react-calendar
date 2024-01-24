@@ -10,7 +10,7 @@ import { useGetMonthDays } from "./hooks/useGetMonthDays";
 export const Calendar = () => {
     const { getMonthDays } = useGetMonthDays();
 
-    const [localstorageData, setLocalstorage] = useAtom(todoMemoLocalStorageAtom);
+    const [, setLocalstorage] = useAtom(todoMemoLocalStorageAtom); // 更新関数のみ使用（全てのスケジュールリセット）
 
     const currYear = new Date().getFullYear();
     const currMonth = new Date().getMonth() + 1;
@@ -21,16 +21,19 @@ export const Calendar = () => {
     useEffect(() => getMonthDays(ctrlYear, ctrlMonth, setDays), [ctrlMonth]);
 
     const resetAllSchedule: () => void = () => {
-        localStorage.removeItem('todoMemos');
-        setLocalstorage((_prevLocalstorage) => []);
-        location.reload();
+        const result: boolean = confirm('全てのスケジュールを削除してもよろしいですか？');
+        if (result) {
+            localStorage.removeItem('todoMemos');
+            setLocalstorage((_prevLocalstorage) => []);
+            alert('全てのスケジュールが削除されました');
+            location.reload();
+        }
     }
 
     return (
         <div className={calendarStyle.wrapper}>
             <h1>{ctrlYear}年{ctrlMonth}月</h1>
-            {/* localstorageData(Atom)にはデフォルト値が1つ入っているため disabled={localstorageData.length <= 1} と指定 */}
-            <button disabled={localstorageData.length <= 1} className={calendarStyle.resetBtn} type="button" onClick={resetAllSchedule}>予定を全削除</button>
+            <button className={calendarStyle.resetBtn} type="button" onClick={resetAllSchedule}>予定を全削除</button>
             <PrevNextMonthBtns
                 className={calendarStyle.btns}
                 ctrlYear={ctrlYear}
