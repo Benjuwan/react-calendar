@@ -8,7 +8,7 @@
     - `todoMemoAtom`：画面で登録・更新したToDoメモ管理用
 
 ## component
-- Calendar.tsx（`src/components/calendar/Calendar.tsx`）<br />スケジュールクリアボタンの disabled 判定のために`Atom（todoMemoAtom）`変数及び更新関数を使用
+- Calendar.tsx（`src/components/calendar/Calendar.tsx`）<br />`Atom（todoMemoLocalStorageAtom）`更新関数のみ使用（全てのスケジュールリセット）
 
 - PrevNextMonthBtns.tsx（`src/components/calendar/PrevNextMonthBtns.tsx`）<br />カレンダー移動時の登録・更新作業のために`Atom（todoMemoLocalStorageAtom）`変数のみ使用
 

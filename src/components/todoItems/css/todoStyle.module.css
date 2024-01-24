@@ -77,9 +77,9 @@ ul.todoLists {
         border-radius: 4px;
         
         &:hover {
+            cursor: pointer;
             & p {
                 &.editTargetStr {
-                    cursor: pointer;
                     color: #0baa0b;
                 }
             }
@@ -124,7 +124,7 @@ ul.todoLists {
                 background-color: #fff;
                 box-shadow: 0 0 4px rgba(0, 0, 0, .5) inset;
                 border-radius: 4px;
-                padding: 1em;
+                padding: 3em 1em;
 
                 & div.editTargetContent {
                     text-align: left;

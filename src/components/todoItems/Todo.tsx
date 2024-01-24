@@ -45,7 +45,6 @@ export const Todo = ({ todoID }: { todoID: string }) => {
                                     </div>
                                     <TodoItems
                                         todoItem={todoItem}
-                                        todoStyle={todoStyle}
                                         todoID={todoID}
                                         index={i}
                                     />
