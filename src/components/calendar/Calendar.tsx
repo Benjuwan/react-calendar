@@ -10,7 +10,7 @@ import { useGetMonthDays } from "./hooks/useGetMonthDays";
 export const Calendar = () => {
     const { getMonthDays } = useGetMonthDays();
 
-    const [localstorageData] = useAtom(todoMemoLocalStorageAtom); // 変数のみ使用
+    const [localstorageData, setLocalstorage] = useAtom(todoMemoLocalStorageAtom);
 
     const currYear = new Date().getFullYear();
     const currMonth = new Date().getMonth() + 1;
@@ -22,6 +22,7 @@ export const Calendar = () => {
 
     const resetAllSchedule: () => void = () => {
         localStorage.removeItem('todoMemos');
+        setLocalstorage((_prevLocalstorage) => []);
         location.reload();
     }
 
@@ -40,7 +41,7 @@ export const Calendar = () => {
             <ul className={calendarStyle.calendar}>
                 {days.map((day, i) => (
                     // カスタムデータ属性の指定は low-case でないと React から怒られる
-                    <li key={i} data-daydate={day.dayDateNum}>
+                    <li key={i} data-daydate={day.dayDateNum} className={calendarStyle.calendarLists}>
                         <p>
                             {day.signalPrevNextMonth && <span>{day.month}/</span>}{day.day}
                         </p>

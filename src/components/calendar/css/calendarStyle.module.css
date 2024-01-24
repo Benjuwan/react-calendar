@@ -50,7 +50,7 @@
         place-items: center;
         place-content: start;
 
-        & li {
+        & li.calendarLists {
             padding: .5em;
             align-self: stretch;
             background-color: #fff;
