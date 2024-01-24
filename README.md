@@ -2,6 +2,11 @@
 
 [【Reactアプリ100本ノック】08 Calendar](https://qiita.com/Sicut_study/items/3bd13a266feade56a4d0)の検証用ファイル。
 
+- 備忘録<br />`netlify`にホスティング、ホスティング元ファイルは`dist`。
+
+## 概要
+- 公開サイト：[https://benjuwan-react-calendar.netlify.app/](https://benjuwan-react-calendar.netlify.app/)
+
 ## `Atom`でToDoを管理
 - 状態管理ライブラリ`jotai`：`Atom`使用（`src/atom/atom.ts`）
     - `todoMemoLocalStorageAtom`：`localStorage`に保存したToDoメモ管理用
