@@ -42,6 +42,8 @@ export const useGetCalndarItem = () => {
                 dayDateNum: dayDate,
                 signalPrevNextMonth: true
             }
+            if (month === 0) newCalendarItem.month = 12;
+            if (month === 13) newCalendarItem.month = 1;
             return newCalendarItem;
         } else {
             const newCalendarItem: calendarItemType = {
@@ -53,7 +55,7 @@ export const useGetCalndarItem = () => {
             }
             return newCalendarItem;
         }
-        
+
     }
 
     return { getCalendarItem }

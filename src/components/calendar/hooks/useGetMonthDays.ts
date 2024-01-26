@@ -21,8 +21,6 @@ export const useGetMonthDays = () => {
         }
 
         const theCalendar: calendarItemType[] = prevNextDays(year, month, dayDateBox);
-
-        // setDays((_prevDays) => dayDateBox); // 先月・来月を含まないカレンダー表示
         setDays((_prevDays) => theCalendar);
     }
 
