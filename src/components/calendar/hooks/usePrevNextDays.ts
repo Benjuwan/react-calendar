@@ -29,35 +29,19 @@ export const usePrevNextDays = () => {
             }
 
             /* 前月関連の処理 */
-            else if (i === 0 && day.dayDateNum !== 1) {
-                const targetNum: number = 1 - day.dayDateNum;
-                const targetDay: number = new Date(year, month - 1, targetNum).getDate();
+            else if (i === 0 && day.dayDateNum !== 0) {
+                const getLastSundayDayDate: number = 1 - day.dayDateNum;
+                const getLastSundayDay: number = new Date(year, month - 1, getLastSundayDayDate).getDate();
                 const prevFinalDay: number = new Date(year, month - 1, 0).getDate();
-                for (let day = targetDay; day <= prevFinalDay; day++) {
+                for (let day = getLastSundayDay; day <= prevFinalDay; day++) {
                     const newCalendarItem: calendarItemType = getCalendarItem(year, month - 1, day, true);
                     targetPrevDays.push(newCalendarItem);
                 }
             }
         });
 
-        /* 各月において「先月・次月の日数を合計7日間だけ取得」して配列（カレンダー）に反映させる */
-        if (targetPrevDays.length > 0) {
-            let adjustedPrevDays: calendarItemType[] = [...targetPrevDays];
-            let adjustedNextDays: calendarItemType[] = [...targetNextDays];
-
-            if (targetPrevDays.length >= 4) {
-                adjustedPrevDays = [...targetPrevDays].slice(targetPrevDays.length - 4, targetPrevDays.length); // 先月は4日間
-            }
-            if (targetNextDays.length >= 3) {
-                adjustedNextDays = [...targetNextDays].slice(0, 3); // 次月は3日間
-            }
-            
-            const theCalendar: calendarItemType[] = [...adjustedPrevDays, ...dayDateBox, ...adjustedNextDays];
-            return theCalendar
-        } else {
-            const theCalendar: calendarItemType[] = [...targetPrevDays, ...dayDateBox, ...targetNextDays];
-            return theCalendar
-        }
+        const theCalendar: calendarItemType[] = [...targetPrevDays, ...dayDateBox, ...targetNextDays];
+        return theCalendar
     }
 
     return { prevNextDays }

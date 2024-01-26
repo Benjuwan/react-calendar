@@ -7,6 +7,12 @@ import { PrevNextMonthBtns } from "./PrevNextMonthBtns";
 import { Todo } from "../todoItems/Todo";
 import { useGetMonthDays } from "./hooks/useGetMonthDays";
 
+type todaySignal = {
+    thisYear: number;
+    thisMonth: number;
+    today: number;
+}
+
 export const Calendar = () => {
     const { getMonthDays } = useGetMonthDays();
 
@@ -17,8 +23,25 @@ export const Calendar = () => {
     const [ctrlYear, setCtrlYear] = useState<number>(currYear);
     const [ctrlMonth, setCtrlMonth] = useState<number>(currMonth);
     const [days, setDays] = useState<calendarItemType[]>([]);
+    const [ctrlToday, setCtrlToday] = useState<todaySignal | null>(null);
 
-    useEffect(() => getMonthDays(ctrlYear, ctrlMonth, setDays), [ctrlMonth]);
+    useEffect(() => {
+        const today: todaySignal = {
+            thisYear: new Date().getFullYear(),
+            thisMonth: new Date().getMonth() + 1,
+            today: new Date().getDate()
+        }
+        setCtrlToday((_prevCtrlToday) => today);
+    }, []);
+
+    const jumpThisMonth: () => void = () => {
+        const thisYear: number = new Date().getFullYear();
+        const thisMonth: number = new Date().getMonth() + 1;
+        setCtrlYear((_prevCtrlYear) => thisYear);
+        setCtrlMonth((_prevCtrlMonth) => thisMonth);
+        getMonthDays(thisYear, thisMonth, setDays);
+        window.scrollTo(0, 0);
+    }
 
     const resetAllSchedule: () => void = () => {
         const result: boolean = confirm('全てのスケジュールを削除してもよろしいですか？');
@@ -29,6 +52,8 @@ export const Calendar = () => {
             location.reload();
         }
     }
+
+    useEffect(() => getMonthDays(ctrlYear, ctrlMonth, setDays), [ctrlMonth]);
 
     return (
         <div className={calendarStyle.wrapper}>
@@ -41,10 +66,15 @@ export const Calendar = () => {
                 ctrlMonth={ctrlMonth}
                 setCtrlMonth={setCtrlMonth}
             />
+            <button id={calendarStyle["jumpThisMonth"]} type="button" onClick={jumpThisMonth}>今月に移動</button>
             <ul className={calendarStyle.calendar}>
                 {days.map((day, i) => (
                     // カスタムデータ属性の指定は low-case でないと React から怒られる
-                    <li key={i} data-daydate={day.dayDateNum} className={calendarStyle.calendarLists}>
+                    <li key={i} data-daydate={day.dayDateNum} className={
+                        (ctrlToday?.thisYear === day.year && ctrlToday.thisMonth === day.month && ctrlToday.today === day.day) ?
+                            `${calendarStyle.todaySignal} ${calendarStyle.calendarLists}` :
+                            `${calendarStyle.calendarLists}`
+                    }>
                         <p>
                             {day.signalPrevNextMonth && <span>{day.month}/</span>}{day.day}
                         </p>
