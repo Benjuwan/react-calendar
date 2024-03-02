@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import calendarStyle from "./css/calendarStyle.module.css";
 import { calendarItemType } from "./ts/calendarItemType";
 import { useAtom } from "jotai";
-import { todoMemoLocalStorageAtom } from "../../atom/atom";
+import { isDesktopViewAtom, todoMemoLocalStorageAtom } from "../../atom/atom";
 import { PrevNextMonthBtns } from "./PrevNextMonthBtns";
 import { Todo } from "../todoItems/Todo";
 import { useGetMonthDays } from "./hooks/useGetMonthDays";
+import { TodoList } from "../todoItems/TodoList";
 
 type todaySignal = {
     thisYear: number;
@@ -17,6 +18,7 @@ export const Calendar = () => {
     const { getMonthDays } = useGetMonthDays();
 
     const [, setLocalstorage] = useAtom(todoMemoLocalStorageAtom); // 更新関数のみ使用（全てのスケジュールリセット）
+    const [desktopView, setDesktopView] = useAtom(isDesktopViewAtom);
 
     const currYear = new Date().getFullYear();
     const currMonth = new Date().getMonth() + 1;
@@ -32,6 +34,8 @@ export const Calendar = () => {
             today: new Date().getDate()
         }
         setCtrlToday((_prevCtrlToday) => today);
+
+        if (window.matchMedia("(min-width: 960px)").matches) setDesktopView(true);
     }, []);
 
     const jumpThisMonth: () => void = () => {
@@ -51,6 +55,15 @@ export const Calendar = () => {
             alert('全てのスケジュールが削除されました');
             location.reload();
         }
+    }
+
+    const viewTodoCtrl: (btnElm: HTMLButtonElement) => void = (btnElm: HTMLButtonElement) => {
+        const parentTodoViewElm: HTMLDivElement | null = btnElm.closest(`.${calendarStyle.todoView}`);
+        if (parentTodoViewElm?.classList.contains(calendarStyle.OnView)) {
+            parentTodoViewElm.classList.remove(calendarStyle.OnView);
+            return;
+        }
+        parentTodoViewElm?.classList.add(calendarStyle.OnView);
     }
 
     useEffect(() => getMonthDays(ctrlYear, ctrlMonth, setDays), [ctrlMonth]);
@@ -79,7 +92,22 @@ export const Calendar = () => {
                             {day.signalPrevNextMonth && <span>{day.month}/</span>}{day.day}
                         </p>
                         <p>{day.dayDate}</p>
-                        {day.signalPrevNextMonth ? null : <Todo todoID={`${day.year}/${day.month}/${day.day}`} />}
+                        {day.signalPrevNextMonth ? null :
+                            <>
+                                {desktopView ?
+                                    <Todo todoID={`${day.year}/${day.month}/${day.day}`} /> :
+                                    <div className={`${calendarStyle.todoView}`}>
+                                        <button className={`${calendarStyle.openBtn} todoCtrlOpen`} onClick={(btnEl: SyntheticEvent<HTMLButtonElement>) => viewTodoCtrl(btnEl.currentTarget)}><span className="material-symbols-outlined">add_circle</span></button>
+                                        <div className={`${calendarStyle.todoCtrlElm}`}>
+                                            <button className={`${calendarStyle.closeBtn} todoCtrlClose`} onClick={(btnEl: SyntheticEvent<HTMLButtonElement>) => viewTodoCtrl(btnEl.currentTarget)}><span className="material-symbols-outlined">close</span></button>
+                                            <p style={{ 'fontWeight': 'bold' }}>{day.month}/{day.day}（{day.dayDate}）</p>
+                                            <Todo todoID={`${day.year}/${day.month}/${day.day}`} />
+                                        </div>
+                                        <TodoList todoID={`${day.year}/${day.month}/${day.day}`} />
+                                    </div>
+                                }
+                            </>
+                        }
                     </li>
                 ))}
             </ul>

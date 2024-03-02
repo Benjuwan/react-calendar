@@ -1,5 +1,13 @@
 @charset "utf-8";
 
+form {
+    width: clamp(280px, calc(100vw/2), 320px);
+
+    @media screen and (min-width:960px) {
+        width: 100%;
+    }
+}
+
 form,
 ul,
 .formBtns {
@@ -50,12 +58,24 @@ form {
     & label {
         margin-right: 1em;
 
-        & input[type="text"] {
-            width: 100%;
+        & input {
+            line-height: 2;
+
+            &[type="text"] {
+                width: 100%;
+            }
+
+            &[type="time"] {
+                width: 50%;
+
+                @media screen and (min-width:960px) {
+                    width: auto;
+                }
+            }
         }
 
         &.timeLabel {
-            font-size: clamp(10px, calc(100vw/150), 12px);
+            font-size: clamp(10px, 100%, 14px);
             display: block;
             margin: .5em 0;
         }
@@ -75,9 +95,10 @@ ul.todoLists {
         padding: .5em;
         box-shadow: 0 0 8px rgba(0, 0, 0, .25) inset;
         border-radius: 4px;
-        
+
         &:hover {
             cursor: pointer;
+
             & p {
                 &.editTargetStr {
                     color: #0baa0b;

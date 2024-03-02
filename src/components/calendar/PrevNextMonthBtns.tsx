@@ -10,6 +10,14 @@ type btnsPropsType = {
     setCtrlMonth: React.Dispatch<React.SetStateAction<number>>;
 }
 
+const btnStyle: object = {
+    'padding': '.5em 1em'
+}
+
+const btnIconStyle: object = {
+    'verticalAlign': 'middle'
+}
+
 export const PrevNextMonthBtns: FC<btnsPropsType> = (props) => {
     const { className, ctrlYear, setCtrlYear, ctrlMonth, setCtrlMonth } = props;
 
@@ -39,8 +47,12 @@ export const PrevNextMonthBtns: FC<btnsPropsType> = (props) => {
 
     return (
         <div className={className}>
-            <button type="button" onClick={prevCalendarView}>prev</button>
-            <button type="button" onClick={nextCalendarView}>next</button>
+            <button type="button" style={btnStyle} onClick={prevCalendarView}><span className="material-symbols-outlined" style={btnIconStyle}>
+                navigate_before
+            </span></button>
+            <button type="button" style={btnStyle} onClick={nextCalendarView}><span className="material-symbols-outlined" style={btnIconStyle}>
+                navigate_next
+            </span></button>
         </div>
     );
 }

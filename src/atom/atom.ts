@@ -17,3 +17,5 @@ if (getLocalStorageItems !== null) {
 }
 
 export const todoMemoAtom = atom([todoMemoItemsDefault]);
+
+export const isDesktopViewAtom = atom<boolean>(false);
