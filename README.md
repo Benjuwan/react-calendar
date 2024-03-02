@@ -1,5 +1,4 @@
 # React-Calendar
-
 [【Reactアプリ100本ノック】08 Calendar](https://qiita.com/Sicut_study/items/3bd13a266feade56a4d0)の検証用ファイル。
 
 - 備忘録<br />`netlify`にホスティング、ホスティング元ファイルは`dist`。
@@ -15,6 +14,7 @@
 - 状態管理ライブラリ`jotai`：`Atom`使用（`src/atom/atom.ts`）
     - `todoMemoLocalStorageAtom`：`localStorage`に保存したToDoメモ管理用
     - `todoMemoAtom`：画面で登録・更新したToDoメモ管理用
+    - `isDesktopViewAtom`：デスクトップ（minw:960px）での閲覧か否かの判定用
 
     - Calendar.tsx（`src/components/calendar/Calendar.tsx`）<br />`Atom（todoMemoLocalStorageAtom）`更新関数のみ使用（全てのスケジュールリセット）
 
