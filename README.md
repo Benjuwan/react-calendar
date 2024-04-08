@@ -1,13 +1,6 @@
 # React-Calendar
 [【Reactアプリ100本ノック】08 Calendar](https://qiita.com/Sicut_study/items/3bd13a266feade56a4d0)の検証用ファイル。
 
-- 備忘録<br />`netlify`にホスティング、ホスティング元ファイルは`dist`。
-
-## 概要
-- 公開サイト：[https://benjuwan-react-calendar.netlify.app/](https://benjuwan-react-calendar.netlify.app/)
-
-***
-
 ![react-calendar](https://github.com/Benjuwan/react-calendar/assets/90702379/66fa5dd4-95e8-4296-bba0-0e1977a158bc)
 
 ## `Atom`でToDoを管理
